@@ -35,5 +35,21 @@ public class DaoCuenta {
 
 	}
 
-
+	/**
+	 * Crear cuenta para las personas que no tienen.
+	 * @throws SQLException 
+	 */
+	public void insertarCuenta(Cuenta c) throws SQLException {
+		
+		//Creo consulta para añadir una cuenta nueva
+		try(PreparedStatement ps= con.prepareStatement("INSERT INTO cuenta (numerocuenta,saldo) VALUES (?,?)");){
+			//El id es autoincrement, por lo que no se añade porque aparece por defecto
+			ps.setString(1, c.getNumeroCuenta());
+			ps.setFloat(2, c.getSaldo());
+			
+			//Actualizar sentencia
+			ps.executeUpdate();
+			
+		}
+	}
 }

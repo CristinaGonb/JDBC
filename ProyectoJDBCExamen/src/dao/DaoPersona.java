@@ -28,15 +28,18 @@ public class DaoPersona {
 
 		return instance;
 	}
-	
+
 	public void cerrarSesion() throws SQLException {
 		con.close();
 
 	}
-	
-	/*
+
+	/**
 	 * Listado con todos los datos de las personas con cuenta en num rojos (-) Todos
 	 * los datos de persona y cuenta
+	 * 
+	 * @throws SQLException
+	 * @return result
 	 */
 
 	public List<Persona> listarPersonasConCuentaEnNumRojos() throws SQLException {
@@ -46,7 +49,13 @@ public class DaoPersona {
 		boolean hayDatos = false;
 
 		try (PreparedStatement ps = con.prepareStatement(
-				"SELECT p.nombre,p.idcuenta,c.saldo FROM persona as p INNER JOIN cuenta as c ON p.idcuenta= c.idcuenta WHERE c.saldo < 0 ");) {
+				"SELECT * FROM persona as p INNER JOIN cuenta as c ON p.idcuenta= c.idcuenta WHERE c.saldo < 0 ");) {
+
+			/*
+			 * ps.setInt(1,100) posicion-valor Esto se utiliza en el caso de que la
+			 * consulta, utilizara ? por cualquier numero/ string Se utilizaria en vez de
+			 * executeQuery
+			 */
 
 			// Ejecuto la sentencia para obtener la informacion
 			ResultSet rs = ps.executeQuery();
@@ -54,13 +63,20 @@ public class DaoPersona {
 			while (rs.next()) {
 				// Si hay datos recogo la informacion de cada objeto
 				hayDatos = true;
-				
 
-			//	cuenta = new Cuenta(rs.getInt("c.idcuenta"), rs.getString("c.numerocuenta"), rs.getFloat("c.saldo"));
+				// Creo objeto cuenta
+				cuenta = new Cuenta(rs.getInt("c.idcuenta"), rs.getString("c.numerocuenta"), rs.getFloat("c.saldo"));
+				// Añadimos la persona correspondiente a la lista
+				result.add(new Persona(rs.getString("p.dni"), rs.getString("p.nombre"), rs.getString("p.apellidos"),
+						cuenta));
 
-				//result.add(new Persona(rs.getString("p.dni"), rs.getString("p.nombre"), rs.getString("p.apellidos"),
-						//cuenta));
+				/*
+				 * Otra forma de hacerlo Persona p= new Persona(rs.getString("p.dni"),
+				 * rs.getString("p.nombre"), rs.getString("p.apellidos"));
+				 *
+				 */
 			}
+			// Cierro resultSet
 			rs.close();
 		}
 		// Cuando no hay datos, finalizo
@@ -70,6 +86,51 @@ public class DaoPersona {
 
 		return result;
 	}
-	
 
+	/**
+	 * Listado de todos los datos de las personas que no tienen cuenta
+	 * @return result
+	 * @throws SQLException 
+	 */
+
+	public List<Persona> listadoPersonasSinCuenta() throws SQLException {
+		List<Persona> result = new ArrayList<>();
+		boolean hayDatos=false;
+		Cuenta cuenta;
+		
+		try (PreparedStatement ps = con.prepareStatement("SELECT * FROM persona WHERE idcuenta IS null");) {
+			// Ejecuto la sentencia para obtener la informacion
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				// Si hay datos recogo la informacion de cada objeto
+				hayDatos = true;
+
+				// Añadimos la persona correspondiente a la lista
+				result.add(new Persona(rs.getString("dni"), rs.getString("nombre"), rs.getString("apellidos")));
+
+			}
+			// Cierro resultSet
+			rs.close();
+		}
+		// Cuando no hay datos, finalizo
+		if (!hayDatos) {
+			result = null;
+		}
+
+		return result;
+	}
+	/**
+	 * Actualizar la cuenta de una persona
+	 * @throws SQLException 
+	 */
+	public void actualizarPersona(Persona p) throws SQLException {
+		try(PreparedStatement ps= con.prepareStatement("UPDATE persona SET numerocuenta=?,saldo=?");){
+			
+			ps.setObject(1,p.getCuenta());
+			ps.setObject(2,p.getCuenta());
+			
+			ps.executeUpdate();
+		}
+	}
 }

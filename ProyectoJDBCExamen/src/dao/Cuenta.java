@@ -1,12 +1,21 @@
 package dao;
 
-public class Cuenta {
+import java.io.Serializable;
+
+public class Cuenta implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2204050385473215258L;
 	private int idCuenta;
 	private String numeroCuenta;
 	private float saldo;
 	
 	
-	
+	public Cuenta(int idCuenta) {
+		super();
+		this.idCuenta = idCuenta;
+	}
 	public Cuenta(int idCuenta, String numeroCuenta, float saldo) {
 		super();
 		this.idCuenta = idCuenta;

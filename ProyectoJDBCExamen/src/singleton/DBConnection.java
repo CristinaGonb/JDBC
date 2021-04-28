@@ -15,7 +15,6 @@ public class DBConnection {
 	private static final String USUARIO = "USER08";
 
 	private static final String JDBC_URL = "jdbc:mysql://iescristobaldemonroy.duckdns.org:33306/BDUSER08";
-			//iescristobaldemonroy.duckdns.org:33306/BDUSER08";
 	
 	private static Connection instance = null;//objeto
 	
