@@ -41,29 +41,42 @@ public class PrincipalEjercicio1 {
 					System.out.println(daoPersona.listadoPersonasSinCuenta());
 					break;
 				case 3:
+					Cuenta cuenta;
 					List<Persona> personasSinCuenta = daoPersona.listadoPersonasSinCuenta();
 					if (personasSinCuenta != null && !personasSinCuenta.isEmpty()) {
 
-						System.out.println("Persona con DNI: ");
-						dni = teclado.nextLine();
-
-				
-						for (Persona personas : personasSinCuenta) {
-							if (personas.getDni().equals(dni)) {
-								personaEncontrada = personas;
-							}
-						}
-						if (personaEncontrada != null) {
+						for (Persona persona : personasSinCuenta) {
+							System.out.println("Persona con DNI: " + persona.getDni());
 							System.out.println("Introduzca su cuenta: ");
 							numCuenta = teclado.nextLine();
-							Cuenta cuenta = new Cuenta(numCuenta, 100);
-							daoCuenta.insertarCuenta(cuenta);
-							// Añado la cuenta
-							personaEncontrada.setCuenta(cuenta);
-							// Actualizo la persona para añadir la cuenta
-							daoPersona.actualizarPersona(personaEncontrada);
+
+							// Buscamos el idCuenta
+							cuenta = daoCuenta.buscarCuentaPorNumeroCuenta(numCuenta);
+
+							if (cuenta != null) { // lo hemos encontrado, actualizamos
+
+								daoPersona.actualizarCuentaDePersona(persona.getDni(), cuenta.getIdCuenta());
+								System.out.println("Cuenta actualizada con éxito");
+								
+							} else {
+								System.out.println("No existe la cuenta " + numCuenta + " vamos a crearla");
+								System.out.println("Dame el saldo");
+								float saldo = (float) Double.parseDouble(teclado.nextLine());
+
+								//Creamos la cuenta con los datos que hemos introducido
+								daoCuenta.insertarCuenta(new Cuenta(numCuenta, saldo));
+								//Añadimos la cuenta
+								cuenta = daoCuenta.buscarCuentaPorNumeroCuenta(numCuenta);
+								//Actualizamos la cuenta de la persona con los datos creados
+								daoPersona.actualizarCuentaDePersona(persona.getDni(), cuenta.getIdCuenta());
+								System.out.println("Cuenta creada con éxito");
+							}
 						}
 					}
+					break;
+				case 4:
+					break;
+				case 5:
 					break;
 				}
 
@@ -80,5 +93,7 @@ public class PrincipalEjercicio1 {
 		System.out.println("1. Listar todos las personas con cuenta en rojo");
 		System.out.println("2. Listar todas las personas sin cuenta");
 		System.out.println("3. Actualizar cuentas");
+		System.out.println("4. Borrar personas con saldo negativo");
+		System.out.println("5. Consultar el dni solicitando nombre y apellidos");
 	}
 }

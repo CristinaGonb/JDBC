@@ -94,7 +94,7 @@ public class DaoPersona {
 	 */
 
 	public List<Persona> listadoPersonasSinCuenta() throws SQLException {
-		List<Persona> result = new ArrayList<>();
+		List<Persona> result = new ArrayList<Persona>();
 		boolean hayDatos=false;
 		Cuenta cuenta;
 		
@@ -132,5 +132,15 @@ public class DaoPersona {
 			
 			ps.executeUpdate();
 		}
+	}
+
+	public void actualizarCuentaDePersona(String dni, int idCuenta) throws SQLException {
+		try(PreparedStatement ps= con.prepareStatement("UPDATE persona SET idcuenta=? where dni=?");){
+			ps.setInt(1, idCuenta);
+			ps.setString(2, dni);
+			
+			ps.executeUpdate();
+		}
+		
 	}
 }

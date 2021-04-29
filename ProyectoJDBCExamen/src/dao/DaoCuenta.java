@@ -35,6 +35,28 @@ public class DaoCuenta {
 
 	}
 
+	
+	public Cuenta buscarCuentaPorNumeroCuenta ( String numeroCuenta) throws SQLException {
+		Cuenta cuenta=null;
+		ResultSet rs;
+		
+		//Creo consulta para añadir una cuenta nueva
+		try(PreparedStatement ps= con.prepareStatement("SELECT * FROM cuenta WHERE numerocuenta=?");){
+			
+			ps.setString(1,numeroCuenta);
+			
+			rs=ps.executeQuery();
+			
+			if ( rs.next()) {
+				
+				cuenta= new Cuenta( rs.getInt("idCuenta"), rs.getString("numerocuenta"), rs.getFloat("saldo") );
+			}
+		}
+		
+		return cuenta;
+		
+	}
+	
 	/**
 	 * Crear cuenta para las personas que no tienen.
 	 * @throws SQLException 
